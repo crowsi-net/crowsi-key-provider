@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crowsi://keys/signing-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "request_id",
+    "nonce",
+    "security_domain",
+    "deployment_id",
+    "workload_id",
+    "key_id",
+    "purpose",
+    "digest_sha256",
+    "issued_at_epoch_s",
+    "expires_at_epoch_s"
+  ],
+  "properties": {
+    "schema": { "const": "crowsi://keys/signing-request/v1" },
+    "request_id": { "$ref": "#/$defs/id" },
+    "nonce": { "$ref": "#/$defs/id" },
+    "security_domain": { "$ref": "#/$defs/id" },
+    "deployment_id": { "$ref": "#/$defs/id" },
+    "workload_id": { "$ref": "#/$defs/workload_id" },
+    "key_id": { "$ref": "#/$defs/id" },
+    "purpose": {
+      "enum": [
+        "policy-administration",
+        "coordinator-checkpoint",
+        "pep-enforcement-receipt",
+        "independent-readback-report",
+        "workload-certificate-issuance",
+        "certificate-authority-receipt",
+        "certificate-manager-commit-receipt",
+        "certificate-manager-handoff-receipt",
+        "release",
+        "rescue-recovery"
+      ]
+    },
+    "digest_sha256": { "$ref": "#/$defs/sha256" },
+    "issued_at_epoch_s": { "type": "integer", "minimum": 0 },
+    "expires_at_epoch_s": { "type": "integer", "minimum": 1 }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "workload_id": {
+      "type": "string",
+      "maxLength": 256,
+      "pattern": "^spiffe://[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*/[A-Za-z0-9_-][A-Za-z0-9._-]{0,63}(?:/[A-Za-z0-9_-][A-Za-z0-9._-]{0,63})*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

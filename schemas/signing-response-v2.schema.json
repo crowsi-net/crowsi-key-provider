@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crowsi://keys/signing-response/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "request_id",
+    "digest_sha256",
+    "signature",
+    "attestation",
+    "key_operation_performed",
+    "external_actions"
+  ],
+  "properties": {
+    "schema": { "const": "crowsi://keys/signing-response/v2" },
+    "request_id": { "$ref": "signing-request-v1.schema.json#/$defs/id" },
+    "digest_sha256": { "$ref": "signing-request-v1.schema.json#/$defs/sha256" },
+    "signature": {
+      "type": "array",
+      "minItems": 64,
+      "maxItems": 64,
+      "items": { "type": "integer", "minimum": 0, "maximum": 255 }
+    },
+    "attestation": { "$ref": "#/$defs/attestation" },
+    "key_operation_performed": { "const": true },
+    "external_actions": { "const": false }
+  },
+  "$defs": {
+    "attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "key_id",
+        "key_version",
+        "public_key_spki_sha256",
+        "purpose",
+        "algorithm",
+        "properties",
+        "attestation_digest_sha256",
+        "challenge_digest_sha256",
+        "attestation_chain_ref",
+        "issued_at_epoch_s",
+        "expires_at_epoch_s"
+      ],
+      "properties": {
+        "source": { "enum": ["tpm2", "pkcs11-hsm", "cloud-hsm"] },
+        "key_id": { "type": "string", "minLength": 8, "maxLength": 160 },
+        "key_version": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "public_key_spki_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "purpose": {
+          "enum": [
+            "policy-administration",
+            "coordinator-checkpoint",
+            "pep-enforcement-receipt",
+            "independent-readback-report",
+            "workload-certificate-issuance",
+            "certificate-authority-receipt",
+            "certificate-manager-commit-receipt",
+            "certificate-manager-handoff-receipt",
+            "release",
+            "rescue-recovery"
+          ]
+        },
+        "algorithm": { "const": "ecdsa-p256-sha256-p1363-low-s" },
+        "properties": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "hardware-backed",
+              "non-exportable",
+              "role-scoped",
+              "attestation-chain-verified"
+            ]
+          }
+        },
+        "attestation_digest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "challenge_digest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "attestation_chain_ref": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "issued_at_epoch_s": { "type": "integer", "minimum": 1 },
+        "expires_at_epoch_s": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}
